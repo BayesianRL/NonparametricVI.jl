@@ -1,5 +1,10 @@
 module NonparametricVI
 
-# Write your package code here.
+export SVGD
+
+export ParticleContainer
+
+include("particle_containers.jl")
+include("stein/svgd.jl")
 
 end
