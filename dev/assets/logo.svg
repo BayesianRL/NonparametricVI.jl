@@ -2,14 +2,14 @@
 <!-- Created with Inkscape (http://www.inkscape.org/) -->
 
 <svg
-   width="512"
-   height="512"
-   viewBox="0 0 135.46666 135.46667"
+   width="467.90982"
+   height="251.32294"
+   viewBox="0 0 123.80113 66.495862"
    version="1.1"
    id="svg7834"
    inkscape:version="1.2.2 (b0a8486541, 2022-12-01)"
    sodipodi:docname="logo-notypo.svg"
-   inkscape:export-filename="logo.png"
+   inkscape:export-filename="logo-notypo.svg"
    inkscape:export-xdpi="115.2"
    inkscape:export-ydpi="115.2"
    inkscape:dataloss="true"
@@ -123,7 +123,8 @@
      inkscape:groupmode="layer"
      id="layer1"
      sodipodi:insensitive="true"
-     style="display:none">
+     style="display:none"
+     transform="translate(-5.8327582,-34.4854)">
     <rect
        style="fill:#fcfcfb;fill-opacity:0.992157;stroke-width:2.64583;stop-color:#000000"
        id="rect8370"
@@ -136,10 +137,14 @@
   <g
      inkscape:groupmode="layer"
      id="layer2"
-     inkscape:label="particles">
+     inkscape:label="particles"
+     transform="translate(-5.8327582,-34.4854)">
     <g
        id="g11562"
-       transform="matrix(0.88472987,0,0,0.88472987,-51.53149,27.681279)">
+       transform="matrix(0.88472987,0,0,0.88472987,-51.53149,27.681279)"
+       inkscape:export-filename="logo-notypo.svg"
+       inkscape:export-xdpi="115.2"
+       inkscape:export-ydpi="115.2">
       <g
          id="g9218"
          inkscape:label="purple_ball"
