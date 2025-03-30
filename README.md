@@ -21,12 +21,14 @@ Pkg.add("https://github.com/BayesianRL/NonparametricVI.jl.git")
 
 ## Implemented Methods
 
-| Name of Method            | 📝 Paper                                            | Support       | Notes               |
+| Method            | 📝 Paper                                            | Support       | Notes               |
 |----------------------------|---------------------------------------------------------|---------------|---------------------|
-| Stein Variational Gradient Descent | [Paper](https://arxiv.org/abs/1608.04471)          | ✅ Yes           | Initial implementation completed |
+| Stein Variational Gradient Descent | [Paper](https://arxiv.org/abs/1608.04471)          | ✅ Initial implementation           |  |
 | Stein Variational Newton method | [Paper](https://arxiv.org/abs/1806.03085)          | 🚧 todo           |  |
 | Projected Stein Variational Newton | [Paper](https://arxiv.org/abs/1901.08659)          | 🚧 todo           |  |
 | Stein Self-Repulsive Dynamics | [Paper](https://arxiv.org/abs/2002.09070)          | 🚧 todo           |  |
-| Smoothed Particle Hydrodynamics | [Paper](https://arxiv.org/abs/2407.09186)          | 🚧 todo           |  |
+| SPH-ParVI | [Paper](https://arxiv.org/abs/2407.09186)          | 🚧 todo           |  |
+| MPM-ParVI | [Paper](https://arxiv.org/abs/2407.20287)          | 🚧 todo           |  |
+| EParVI | [Paper](https://arxiv.org/abs/2406.20044)          | 🚧 todo           |  |
 
 
