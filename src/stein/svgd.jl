@@ -46,9 +46,13 @@ svgd_minibatch = SVGD(K=sqexp_kernel, η=0.05, batchsize=100)
 end
 
 
+mutable struct SVGDInferenceState <: InferenceState
+    ρ
+    dynamics::SVGD
+end
 
 function init_state(ρ, dynamics::SVGD)
-    return SVGDInferenceState(ρ)
+    return SVGDInferenceState(ρ, dynamics)
 end
 
 
@@ -117,8 +121,4 @@ end
 
 mutable struct SVGDInferenceReport <: InferenceReport
     success::Bool
-end
-
-mutable struct SVGDInferenceState <: InferenceState
-    ρ
 end

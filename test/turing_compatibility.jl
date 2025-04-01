@@ -47,10 +47,10 @@
         end
 
         model = beta_binomial([1, 1, 1, 0, 1, 1])
-
-        dynamics = NonparametricVI.SVGD(K=KernelFunctions.SqExponentialKernel(), η=0.02, batchsize=nothing)
+        kernel = KernelFunctions.SqExponentialKernel()
+        dynamics = NonparametricVI.SVGD(K=kernel, η=0.2, batchsize=nothing)
         pc, state = NonparametricVI.init(model, dynamics; n_particles=16)
-        report = NonparametricVI.infer!(pc, state; iters=10, verbose=true)
+        @time report = NonparametricVI.infer!(pc, state; iters=10, verbose=true)
         
         # samples = get_samples(pc, state)
 
