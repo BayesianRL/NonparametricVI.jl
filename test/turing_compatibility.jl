@@ -38,4 +38,24 @@
 
     end
 
+    @testset "Beta-binomial" begin
+        @model function beta_binomial(x)
+            θ ~ Beta(1.0, 1.0)
+            for i in eachindex(x)
+                x[i] ~ Bernoulli(θ)
+            end
+        end
+
+        model = beta_binomial([1, 1, 1, 0, 1, 1])
+
+        dynamics = NonparametricVI.SVGD(K=KernelFunctions.SqExponentialKernel(), η=0.02, batchsize=nothing)
+        pc, state = NonparametricVI.init(model, dynamics; n_particles=16)
+        report = NonparametricVI.infer!(pc, state; iters=10, verbose=true)
+        
+        # samples = get_samples(pc, state)
+
+        
+    end
+
+
 end

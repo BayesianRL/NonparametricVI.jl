@@ -21,15 +21,23 @@ Stein Variational Gradient Descent (SVGD) particle dynamics.
 # Examples
 ```julia
 using KernelFunctions
+```
 
-# Define a squared exponential kernel
+## Define a squared exponential kernel
+```julia
 sqexp_kernel = SqExponentialKernel()
+```
 
-# Create an SVGD dynamics object with a fixed step size and full batch
+## Create an SVGD dynamics object with a fixed step size and full batch
+```julia
 svgd_fullbatch = SVGD(K=sqexp_kernel, η=0.1, batchsize=nothing)
+```
 
-# Create an SVGD dynamics object with a smaller step size and a batch size of 100
+## Create an SVGD dynamics object with a smaller step size and a batch size of 100
+```julia
 svgd_minibatch = SVGD(K=sqexp_kernel, η=0.05, batchsize=100)
+```
+
 """
 @kwdef mutable struct SVGD <: ParticleDynamics
     K::KernelFunctions.Kernel
@@ -37,6 +45,11 @@ svgd_minibatch = SVGD(K=sqexp_kernel, η=0.05, batchsize=100)
     batchsize
 end
 
+
+
+function init_state(ρ, dynamics::SVGD)
+    return SVGDInferenceState(ρ)
+end
 
 
 """
@@ -61,6 +74,10 @@ function particle_velocity(pc::ParticleContainer,
 
     P = pc.P
     batchsize = dynamics.batchsize
+    if isnothing(batchsize)
+        batchsize = pc.size
+    end
+    
     # sample a mini-batch
     S = StatsBase.sample(1:pc.size, batchsize; replace=false)
     # compute velocity
@@ -72,11 +89,21 @@ function particle_velocity(pc::ParticleContainer,
         minibtach_∇[pi] = k * ∇logρ + ∇k
     end
 
-    return Statistics.mean(minibtach_∇)
+    return sum(minibtach_∇)/batchsize
 end
 
 
+"""
+    update_particles!(ρ, pc::ParticleContainer, dynamics::SVGD)
 
+Updates the positions of all particles in the `ParticleContainer` according to the Stein Variational Gradient Descent (SVGD) update rule.
+
+# Arguments
+- `ρ`: The log-density function (a `LogDensityProblem`) that the particles aim to sample from.
+- `pc::ParticleContainer`: The container holding the current positions of the particles. The particle positions are updated in-place.
+- `dynamics::SVGD`: The `SVGD` dynamics object specifying the kernel, step size (`η`), and batch size for the update.
+
+"""
 function update_particles!(ρ, pc::ParticleContainer, dynamics::SVGD)
     N = pc.size
     # kernel value and gradient
@@ -88,3 +115,10 @@ function update_particles!(ρ, pc::ParticleContainer, dynamics::SVGD)
     return nothing
 end
 
+mutable struct SVGDInferenceReport <: InferenceReport
+    success::Bool
+end
+
+mutable struct SVGDInferenceState <: InferenceState
+    ρ
+end
