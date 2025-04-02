@@ -23,25 +23,27 @@ using DifferentiationInterface
 
     @testset "SVGD" begin
 
-        @model function constrained_program(x)
-            σ ~ Exponential(1.0)
-            λ ~ Exponential(0.4)
-            x ~ Normal(0.0, σ)
+        using LinearAlgebra
+
+        struct Density end
+
+        function LogDensityProblems.capabilities(::Type{<:Density})
+            LogDensityProblems.LogDensityOrder{0}()
+        end
+        
+        LogDensityProblems.dimension(::Density) = 2
+        
+        function LogDensityProblems.logdensity(::Density, x)
+            log(0.5 * exp(-1/0.5 * norm(x-[ 1.0,  1.0])^2) +
+                0.5 * exp(-1/0.5 * norm(x-[-1.0, -1.0])^2))
         end
 
-        trace = constrained_program(0.0)
+        ρ = Density()
 
-        ρ = LogDensityFunction(trace)
-        DynamicPPL.link!!(ρ.varinfo, trace)
-        ∇ρ = ADgradient(AutoForwardDiff(), ρ)
-
-        n = 10
-        d = 2
-        pc = ParticleContainer(trace, n)
-        pc.P = randn((d, n))
-        pd = NonparametricVI.SVGD(K=KernelFunctions.SqExponentialKernel(), η=0.02, batchsize=n)
-        NonparametricVI.update_particles!(∇ρ, pc, pd)
-        
+        kernel = KernelFunctions.SqExponentialKernel()
+        dynamics = NonparametricVI.SVGD(K=kernel, η=0.06, batchsize=nothing)
+        pc, state = NonparametricVI.init(ρ, dynamics; n_particles=16)
+        report = NonparametricVI.infer!(pc, state; iters=10, verbose=true)
 
     end
 

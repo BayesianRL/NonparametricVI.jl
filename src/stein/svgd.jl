@@ -49,10 +49,15 @@ end
 mutable struct SVGDInferenceState <: InferenceState
     ρ
     dynamics::SVGD
+    model::Union{DynamicPPL.Model, Nothing}
+end
+
+function init_state(ρ, dynamics::SVGD, model::DynamicPPL.Model)
+    return SVGDInferenceState(ρ, dynamics, model)
 end
 
 function init_state(ρ, dynamics::SVGD)
-    return SVGDInferenceState(ρ, dynamics)
+    return SVGDInferenceState(ρ, dynamics, nothing)
 end
 
 
@@ -108,10 +113,10 @@ Updates the positions of all particles in the `ParticleContainer` according to t
 - `dynamics::SVGD`: The `SVGD` dynamics object specifying the kernel, step size (`η`), and batch size for the update.
 
 """
-function update_particles!(ρ, pc::ParticleContainer, dynamics::SVGD)
+function update_particles!(ρ, pc::ParticleContainer, dynamics::SVGD, ad_backend)
     N = pc.size
     # kernel value and gradient
-    k_∇k = kernel_and_gradient_fn(dynamics.K)
+    k_∇k = kernel_and_gradient_fn(dynamics.K, ad_backend)
 
     for i ∈ 1:N
         pc.P[:, i] += dynamics.η * particle_velocity(pc, ρ, i, k_∇k, dynamics)
@@ -121,4 +126,46 @@ end
 
 mutable struct SVGDInferenceReport <: InferenceReport
     success::Bool
+end
+
+
+
+
+"""
+    infer!(
+        pc::ParticleContainer,
+        state::SVGDInferenceState;
+        iters::Integer,
+        ad_backend=ADTypes.AutoForwardDiff(),
+        verbose::Bool=false
+    )
+
+Perform inference using Stein Variational Gradient Descent (SVGD).
+
+# Arguments
+- `pc::ParticleContainer`: The particle container holding the current set of particles. 
+- `state::SVGDInferenceState`: The internal state object for the SVGD algorithm
+
+# Keyword Arguments
+- `iters::Integer`: The number of SVGD iterations to perform.
+- `ad_backend=ADTypes.AutoForwardDiff()`: The automatic differentiation backend to use for computing gradients. Defaults to `ADTypes.AutoForwardDiff()`.
+- `verbose::Bool=false`: A boolean flag indicating whether to print progress information during the inference. Defaults to `false`.
+
+# Returns
+- `SVGDInferenceReport`: An `SVGDInferenceReport` object 
+
+# Details
+This function modifies the `pc` in-place, updating the positions of the particles.
+"""
+function infer!(
+    pc::ParticleContainer,
+    state::SVGDInferenceState;
+    iters::Integer=10,
+    ad_backend=ADTypes.AutoForwardDiff(),
+    verbose::Bool=false
+)
+    for i in 1:iters
+        update_particles!(state.ρ, pc, state.dynamics, ad_backend)
+    end
+    return SVGDInferenceReport(true)
 end

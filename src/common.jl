@@ -22,7 +22,7 @@ Returns a function that computes the kernel value and its gradient with respect 
     - The gradient of the kernel with respect to `x`, evaluated at `x`.
 
 """
-function kernel_and_gradient_fn(K::KernelFunctions.Kernel, ad_backend=ADI.AutoForwardDiff())
+function kernel_and_gradient_fn(K::KernelFunctions.Kernel, ad_backend)
     function k_∇k(x, a)
         k, ∇k = ADI.value_and_gradient(t -> K(t, a), ad_backend, x)
         return k, ∇k

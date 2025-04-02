@@ -27,11 +27,8 @@
         model = constrained_program(0.0)
 
         n_particles = 10
-        pc = ParticleContainer(model, n_particles)
+        pc = ParticleContainer(zeros((2, n_particles)))
 
-        @test pc.dim == 2
-        @test pc.size == n_particles
-        
         pc.P[:, 1] = [-1.0, -2.0]
 
         constrained_parameters = NonparametricVI.constrained_particles(pc, model)
@@ -50,7 +47,7 @@
         kernel = KernelFunctions.SqExponentialKernel()
         dynamics = NonparametricVI.SVGD(K=kernel, η=0.2, batchsize=nothing)
         pc, state = NonparametricVI.init(model, dynamics; n_particles=16)
-        @time report = NonparametricVI.infer!(pc, state; iters=10, verbose=true)
+        report = NonparametricVI.infer!(pc, state; iters=10, verbose=true)
         
         # samples = get_samples(pc, state)
 

@@ -58,23 +58,3 @@ function constrained_particles(pc::ParticleContainer, model::DynamicPPL.Model)
     end
     return samples
 end
-
-"""
-    ParticleContainer(model::DynamicPPL.Model, n::Integer)
-
-Constructs a `ParticleContainer` for a given Turing model with a specified number of particles.
-
-# Arguments
-- `model::DynamicPPL.Model`: The Turing model for which the particle container is being created.
-- `n::Integer`: The number of particles to initialize in the container.
-
-# Returns
-- `ParticleContainer`: A new `ParticleContainer` instance with `n` particles initialized to zero.
-
-"""
-function ParticleContainer(model::DynamicPPL.Model, n::Integer)
-    ρ = DynamicPPL.LogDensityFunction(model)
-    dim = LogDensityProblems.dimension(ρ)
-    pc = ParticleContainer(zeros((dim, n)))
-    return pc
-end
