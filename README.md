@@ -147,12 +147,12 @@ Finally we can check the terminal position of particles:
 
 | Method            | 📝 Paper                                            | Support       | Notes               |
 |----------------------------|---------------------------------------------------------|---------------|---------------------|
-| Stein Variational Gradient Descent | [Paper](https://arxiv.org/abs/1608.04471)          | ✅ Basic functionality           |  |
-| Stein Variational Newton method | [Paper](https://arxiv.org/abs/1806.03085)          | 🚧 todo           |  |
-| Projected Stein Variational Newton | [Paper](https://arxiv.org/abs/1901.08659)          | 🚧 todo           |  |
-| Stein Self-Repulsive Dynamics | [Paper](https://arxiv.org/abs/2002.09070)          | 🚧 todo           |  |
-| SPH-ParVI | [Paper](https://arxiv.org/abs/2407.09186)          | 🚧 todo           |  |
-| MPM-ParVI | [Paper](https://arxiv.org/abs/2407.20287)          | 🚧 todo           |  |
-| EParVI | [Paper](https://arxiv.org/abs/2406.20044)          | 🚧 todo           |  |
+| Stein Variational Gradient Descent | 📔 [Stein Variational Gradient Descent: A General Purpose Bayesian Inference Algorithm](https://arxiv.org/abs/1608.04471) ✏️ Qiang Liu, Dilin Wang         | ✅ Basic functionality           |  Accuracy is sensitive to kernel choice. see [`SVGD`](https://bayesianrl.github.io/NonparametricVI.jl/dev/api/#NonparametricVI.SVGD)  |
+| Stein Variational Newton method | 📔 [A Stein variational Newton method](https://arxiv.org/abs/1806.03085) ✏️ Gianluca Detommaso, Tiangang Cui, Alessio Spantini, Youssef Marzouk, Robert Scheichl         | 🚧 todo           |  |
+| Projected Stein Variational Newton | 📔 [Projected Stein Variational Newton: A Fast and Scalable Bayesian Inference Method in High Dimensions](https://arxiv.org/abs/1901.08659) ✏️ Peng Chen, Keyi Wu, Joshua Chen, Thomas O'Leary-Roseberry, Omar Ghattas         | 🚧 todo           |  |
+| Stein Self-Repulsive Dynamics | 📔 [Stein Self-Repulsive Dynamics: Benefits From Past Samples](https://arxiv.org/abs/2002.09070) ✏️ Mao Ye, Tongzheng Ren, Qiang Liu         | 🚧 todo           |  |
+| SPH-ParVI | 📔 [Variational Inference via Smoothed Particle Hydrodynamics](https://arxiv.org/abs/2407.09186) ✏️ Yongchao Huang         | 🚧 todo           |  |
+| MPM-ParVI | 📔 [Variational Inference Using Material Point Method](https://arxiv.org/abs/2407.20287)  ✏️ Yongchao Huang        | 🚧 todo           |  |
+| EParVI | 📔 [Electrostatics-based particle sampling and approximate inference](https://arxiv.org/abs/2406.20044) ✏️ Yongchao Huang         | 🚧 todo           |  |
 
 
