@@ -1,6 +1,6 @@
 using Documenter, NonparametricVI
 
-makedocs(sitename="NonparametricVI.jl", remotes=nothing)
+include("pages.jl")
 
 deploydocs(
     repo = "github.com/BayesianRL/NonparametricVI.jl.git",
