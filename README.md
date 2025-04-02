@@ -4,11 +4,13 @@
 
 
 # NonparametricVI.jl
+NonparametricVI.jl is a collection of particle-based and nonparametric variational methods for approximate Bayesian inference in Julia. You can use it either with [Turing](https://turinglang.org/) probabilistic programming language or other custom sampling problems like Energy-Based Models. In comparison to parametric variational inference, particle-based approaches do not require a parametric family of distibution to approximate posterior. 
 
+https://github.com/user-attachments/assets/3dc29684-2642-4dd2-8be3-3e402de744d2
 
 ## Getting Started
 ### Installation
-NonparametricVI.jl is under development, you can install the latest version using Pkg:
+NonparametricVI.jl is under development, you can install the latest version from this repository using Pkg:
 ```julia
 Pkg.add(url="https://github.com/BayesianRL/NonparametricVI.jl.git")
 ```
@@ -89,7 +91,8 @@ After collecting samples with `get_samples` we can visualize the final result:
 
 
 ### Using with `LogDensityProblems`
-In addtion to Turing programs, you can use NonparametricVI for a custom Bayesian inference problem by implementing the [`LogDensityProblems.jl`](https://github.com/tpapp/LogDensityProblems.jl) interface. For example here we define a toy unnormalized mixture density:
+#### Example: A Mixture Density
+In addtion to Turing programs, you can use NonparametricVI for a custom Bayesian inference problem by implementing the [`LogDensityProblems`](https://github.com/tpapp/LogDensityProblems.jl) interface. For example here we define a toy unnormalized mixture density:
 ```julia
 struct MixtureDensity end
 
