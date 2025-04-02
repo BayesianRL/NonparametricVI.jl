@@ -45,6 +45,8 @@ using DifferentiationInterface
         pc, state = NonparametricVI.init(ρ, dynamics; n_particles=16)
         report = NonparametricVI.infer!(pc, state; iters=10, verbose=true)
 
+        samples = NonparametricVI.get_samples(pc)
+
     end
 
 end

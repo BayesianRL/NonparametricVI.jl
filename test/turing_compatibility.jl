@@ -49,8 +49,8 @@
         pc, state = NonparametricVI.init(model, dynamics; n_particles=16)
         report = NonparametricVI.infer!(pc, state; iters=10, verbose=true)
         
-        # samples = get_samples(pc, state)
-
+        samples = NonparametricVI.get_samples(pc, state)
+        
         
     end
 

@@ -95,7 +95,7 @@ function particle_velocity(pc::ParticleContainer,
     for bi in 1:batchsize
         k, ∇k = k_∇k(P[:, S[bi]], P[:, pi])
         ∇logρ = LogDensityProblems.logdensity_and_gradient(ρ, P[:, S[bi]])[2]
-        minibtach_∇[pi] = k * ∇logρ + ∇k
+        minibtach_∇[bi] = k * ∇logρ + ∇k
     end
 
     return sum(minibtach_∇)/batchsize

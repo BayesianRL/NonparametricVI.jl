@@ -10,7 +10,7 @@
 ### Installation
 NonparametricVI.jl is under development, you can install the latest version using Pkg:
 ```julia
-Pkg.add("https://github.com/BayesianRL/NonparametricVI.jl.git")
+Pkg.add(url="https://github.com/BayesianRL/NonparametricVI.jl.git")
 ```
 
 

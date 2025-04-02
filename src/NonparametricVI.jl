@@ -3,6 +3,8 @@ module NonparametricVI
 export init
 export infer!
 
+export get_samples
+
 export SVGD
 export ParticleContainer
 
@@ -23,6 +25,6 @@ include("turing.jl")
 include("particle_initializers.jl")
 include("stein/svgd.jl")
 include("inference_initializers.jl")
-
+include("sample_utils.jl")
 
 end
