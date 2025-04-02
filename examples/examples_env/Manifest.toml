@@ -1492,7 +1492,7 @@ version = "1.2.0"
 
 [[deps.NonparametricVI]]
 deps = ["ADTypes", "DifferentiationInterface", "Distributions", "DynamicPPL", "ForwardDiff", "KernelFunctions", "LinearAlgebra", "LogDensityProblems", "LogDensityProblemsAD", "Statistics", "StatsBase"]
-git-tree-sha1 = "4b0120b9faf220f40e9a496c7702785ce7c10eac"
+git-tree-sha1 = "ec666a6b7b2f65f12d3407c88b568286353321e8"
 repo-rev = "main"
 repo-url = "https://github.com/BayesianRL/NonparametricVI.jl.git"
 uuid = "2fb14f58-0ee9-4f79-83b0-fac5a8c3c025"
