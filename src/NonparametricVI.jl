@@ -22,6 +22,7 @@ abstract type ParticleInitializer end
 include("common.jl")
 include("particle_containers.jl")
 include("turing.jl")
+include("discrepancies.jl")
 include("particle_initializers.jl")
 include("stein/svgd.jl")
 include("inference_initializers.jl")

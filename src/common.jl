@@ -1,3 +1,4 @@
+import LinearAlgebra
 
 import DifferentiationInterface as ADI
 import LogDensityProblems
