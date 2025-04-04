@@ -1,10 +1,13 @@
 ![NonparametricVI.jl logo](logo/logo-light-typo-1200.png)
 [![Build Status](https://github.com/BayesianRL/NonparametricVI.jl/actions/workflows/CI.yml/badge.svg?branch=main)](https://github.com/BayesianRL/NonparametricVI.jl/actions/workflows/CI.yml?query=branch%3Amain)
 [![Documentation](https://img.shields.io/badge/docs-master-blue.svg)](https://bayesianrl.github.io/NonparametricVI.jl/dev/)
-
+![GitHub License](https://img.shields.io/github/license/BayesianRL/NonparametricVI.jl)
 
 # NonparametricVI.jl
-NonparametricVI.jl is a collection of particle-based and nonparametric variational methods for approximate Bayesian inference in Julia. You can use it either with [Turing](https://turinglang.org/) probabilistic programming language or other custom sampling problems like Energy-Based Models. In comparison to parametric variational inference, particle-based approaches do not require a parametric family of distibution to approximate posterior. 
+NonparametricVI.jl is a collection of particle-based and nonparametric variational methods for approximate Bayesian inference in Julia. You can use it either with [Turing](https://turinglang.org/) probabilistic programming language or other custom sampling problems like Energy-Based Models.
+
+## From Parametric to Nonparametric Variational Inference
+The idea of Variational Inference (VI) is to approximate a target posterior density using a parametric family of probability distibutions by choosing the most fitting member of this family through solving an optimization problem. This approach turns out to be more scalable than MCMC methods especially for models with large number of latent variables. However the main challenge with standard VI is choosing the suitable parametric family. Very simple densities can underestimate the posterior while more complex choices can be computationally infeasible. On the other hand, nonparametric or particle-based VI methods do not require a parametric family and instead try to approximate the posterior by arranging the positions of a set of particles in a way that the particles resemble samples from the target density.
 
 https://github.com/user-attachments/assets/3dc29684-2642-4dd2-8be3-3e402de744d2
 
@@ -50,7 +53,7 @@ end
 model = bayesian_regression(X, y)
 ```
 
-To define the dynamics of Stein Variational Gradient Descent (SVGD), we need a positive-definite kernel. You can use all provided by [KernelFunctions.jl](https://github.com/JuliaGaussianProcesses/KernelFunctions.jl). We use a scaled squared exponential kernel. for more details on designing more complex kernels, check out [KernelFunctions.jl](https://github.com/JuliaGaussianProcesses/KernelFunctions.jl) documentation:  
+To define the dynamics of Stein Variational Gradient Descent (SVGD), we need a positive-definite kernel. You can use all kernels provided by [KernelFunctions.jl](https://github.com/JuliaGaussianProcesses/KernelFunctions.jl). We use a scaled squared exponential kernel. for more details on designing more complex kernels, check out [KernelFunctions.jl](https://github.com/JuliaGaussianProcesses/KernelFunctions.jl) documentation:  
 ```julia
 using KernelFunctions
 kernel = SqExponentialKernel() ∘ ScaleTransform(0.3)
