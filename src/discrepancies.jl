@@ -1,5 +1,5 @@
 """
-    kernelized_stein_discrepancy(P, q, K::KernelFunctions.Kernel; ad_backend)
+    kernelized_stein_discrepancy(P, q, K::KernelFunctions.Kernel; samplesize, ad_backend)
 
 Computes the Kernelized Stein Discrepancy (KSD) between a set of samples `P` and a distribution `q`.
 
@@ -9,6 +9,7 @@ The KSD measures the discrepancy between two probability distributions by evalua
 - `P`: A matrix of samples from the empirical distribution. Each column represents a sample.
 - `q`: A `LogDensityProblems.LogDensityProblem` representing the target distribution.
 - `K`: A kernel function from `KernelFunctions.Kernel`.
+- `samplesize`: The number of sampled particles to evaluate KSD
 - `ad_backend`: An automatic differentiation backend from `DifferentiationInterface`.
 
 # Returns
@@ -29,7 +30,7 @@ For more details see :
 - A Kernelized Stein Discrepancy for Goodness-of-fit Tests, Qiang Liu, Jason Lee, Michael Jordan
 
 """
-function kernelized_stein_discrepancy(P, q, K::KernelFunctions.Kernel; ad_backend)
+function kernelized_stein_discrepancy(P, q, K::KernelFunctions.Kernel; samplesize, ad_backend)
     
     ∇_y(u,v) = ADI.gradient(t->K(u, t), ad_backend, v)
     ∇_x_y(u,v) = ADI.jacobian(t->∇_y(t,v), ad_backend, u)
@@ -44,14 +45,17 @@ function kernelized_stein_discrepancy(P, q, K::KernelFunctions.Kernel; ad_backen
         ∇s_x'*k*∇s_y + ∇s_x'*∇y_k + ∇x_k'*∇s_y + LinearAlgebra.tr(∇_x_y(x,y))
     end
 
-    D = 0
+    # sampling a set of particles for evaluating KSD
     n = size(P)[2]
+    samplesize = min(n, samplesize)
+    S = StatsBase.sample(1:n, samplesize; replace=false)
 
-    for i in 1:n
+    D = 0
+    for i in 1:samplesize
         for j in 1:i
-            D += u(P[:, i], P[:, j])
+            D += u(P[:, S[i]], P[:, S[j]])
         end
     end
 
-    return D/(n*(n-1))
+    return D/(samplesize*(samplesize-1))
 end

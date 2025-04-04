@@ -5,6 +5,7 @@ A struct representing the Kernelized Stein Discrepancy (KSD) metric.
 
 # Fields
 - `K::KernelFunctions.Kernel`: The kernel function used in the KSD computation.
+- `samplesize::Integer`: the size of sample used to evaluate KSD
 
 # Description
 This struct encapsulates the kernel function needed to compute the Kernelized Stein Discrepancy. The KSD is a measure of discrepancy between two probability distributions, and it relies on a kernel function to define the feature space in which the discrepancy is measured.
@@ -13,7 +14,10 @@ By holding the kernel function, this struct provides a convenient way to pass th
 """
 struct KernelizedSteinDiscrepancy <: Metric
     K::KernelFunctions.Kernel
+    samplesize::Integer
 end
+
+KernelizedSteinDiscrepancy(K::KernelFunctions.Kernel) = KernelizedSteinDiscrepancy(K, 64)
 
 """
     compute_metric(
@@ -49,5 +53,5 @@ function compute_metric(
     ρ;
     ad_backend)
     
-    return kernelized_stein_discrepancy(pc.P, ρ, metric.K; ad_backend)
+    return kernelized_stein_discrepancy(pc.P, ρ, metric.K; samplesize=metric.samplesize, ad_backend=ad_backend)
 end
