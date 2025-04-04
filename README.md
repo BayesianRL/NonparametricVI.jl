@@ -115,7 +115,7 @@ end
 Next we define the inference dynamics by choosing a custom kernel. It can be any kernel provided by [KernelFunctions.jl](https://github.com/JuliaGaussianProcesses/KernelFunctions.jl). Here we use a scaled version of the squared exponential kernel:
 ```julia
 kernel = SqExponentialKernel() ∘ ScaleTransform(2.0)
-dynamics = SVGD(K=kernel, η=0.5, batchsize=16)
+dynamics = SVGD(K=kernel, η=0.4, batchsize=16)
 ```
 
 Now we create a set of particles that represent samples:
@@ -134,9 +134,17 @@ S = get_samples(pc)
 Obviously the initial samples does not match the target density. Now we run the `SVGD` dynamics to adjust the samples:
 
 ```julia
-infer!(pc, state; iters=100)
+report = infer!(pc, state; iters=150, track=Dict(
+    "KSD" => KernelizedSteinDiscrepancy(kernel, 64)
+));
 S = get_samples(pc)
 ```  
+
+The above code also tracks the value of Kernelized Stein Discrepancy(KSD) during inference. Since KSD can be expensive to compute, we use a Monte Carlo estimation with `64` particles sampled at each step. After inference we can access the tracked values using `report.metrics["KSD"]` and plot it:
+
+<p align="center">
+    <img src="examples/mixture/KSD.png" width="512">
+</p>
 
 Finally we can check the terminal position of particles:
 <p align="center">

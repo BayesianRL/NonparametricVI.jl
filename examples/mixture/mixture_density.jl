@@ -30,7 +30,7 @@ end
 
 
 kernel = SqExponentialKernel() ∘ ScaleTransform(2.0)
-dynamics = SVGD(K=kernel, η=0.5, batchsize=16)
+dynamics = SVGD(K=kernel, η=0.4, batchsize=16)
 
 pc, state = init(ρ, dynamics; n_particles=512)
 
@@ -44,7 +44,7 @@ M = 3.5
 heatmap!(-M:0.01:M, -M:0.01:M,
          (x,y)->exp(LogDensityProblems.logdensity(ρ, [x,y])), colormap=:ice)
 
-scatter!(S, color=:deepskyblue, markersize=7)
+scatter!(S, color=:dodgerblue, markersize=7)
 
 xlims!(-M, M)
 ylims!(-M, M)
@@ -52,7 +52,19 @@ ylims!(-M, M)
 save("particles_before_inference.png", fig)
 
 
-infer!(pc, state; iters=100, verbose=true);
+report = infer!(pc, state; iters=150, track=Dict(
+    "KSD" => KernelizedSteinDiscrepancy(kernel, 64)
+));
+
+
+# plot KSD
+fig = Figure(size=(700,700))
+ax = Axis(fig[1,1], xlabel="iterations", ylabel="Kernelized Stein Discrepancy")
+
+scatterlines!(report.metrics["KSD"])
+
+save("KSD.png", fig)
+
 
 S = get_samples(pc)
 
@@ -65,7 +77,7 @@ M = 3.5
 heatmap!(-M:0.01:M, -M:0.01:M,
          (x,y)->exp(LogDensityProblems.logdensity(ρ, [x,y])), colormap=:ice)
 
-scatter!(S, color=:deepskyblue, markersize=7)
+scatter!(S, color=:dodgerblue, markersize=7)
 
 xlims!(-M, M)
 ylims!(-M, M)
