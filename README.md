@@ -5,12 +5,13 @@
 ![GitHub License](https://img.shields.io/github/license/BayesianRL/NonparametricVI.jl)
 
 # NonparametricVI.jl
-NonparametricVI.jl is a collection of particle-based and nonparametric variational methods for approximate Bayesian inference in Julia. You can use it either with [Turing](https://turinglang.org/) probabilistic programming language or other custom sampling problems like Energy-Based Models.
+NonparametricVI.jl is a collection of particle-based and nonparametric variational methods for approximate Bayesian inference in Julia. You can use it either with [Turing.jl](https://turinglang.org/) probabilistic programming language or other custom sampling problems defined by [LogDensityProblems.jl](https://github.com/tpapp/LogDensityProblems.jl). Another application of this package is to improve the quality of samples obtained from other methods, For example most MCMC methods tend to produce correlated samples leading to a low effective sample size. In such cases, the samples can be decorrelated using any suitable particle-based approach.
 
 ## From Parametric to Nonparametric Variational Inference
 The idea of Variational Inference (VI) is to approximate a target posterior density using a parametric family of probability distibutions by choosing the most fitting member of this family through solving an optimization problem. This approach turns out to be more scalable than MCMC methods especially for models with large number of latent variables. However the main challenge with standard VI is choosing the suitable parametric family. Very simple densities can underestimate the posterior while more complex choices can be computationally infeasible. On the other hand, nonparametric or particle-based VI methods do not require a parametric family and instead try to approximate the posterior by arranging the positions of a set of particles in a way that the particles resemble samples from the target density.
 
 https://github.com/user-attachments/assets/3dc29684-2642-4dd2-8be3-3e402de744d2
+
 
 ## Getting Started
 ### Installation
@@ -144,7 +145,7 @@ report = infer!(pc, state; iters=150, track=Dict(
 S = get_samples(pc)
 ```  
 
-The above code also tracks the value of Kernelized Stein Discrepancy(KSD) during inference. Since KSD can be expensive to compute, we use a Monte Carlo estimation with `64` particles sampled at each step. After inference we can access the tracked values using `report.metrics["KSD"]` and plot it:
+The above code also tracks the value of [Kernelized Stein Discrepancy](https://proceedings.mlr.press/v48/liub16.html) (KSD) during inference. Since KSD can be expensive to compute, we use a Monte Carlo estimation with `64` particles sampled at each step. After inference we can access the tracked values using `report.metrics["KSD"]` and plot it:
 
 <p align="center">
     <img src="examples/mixture/KSD.png" width="512">
