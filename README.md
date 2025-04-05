@@ -1,6 +1,7 @@
 ![NonparametricVI.jl logo](logo/logo-light-typo-1200.png)
 [![Build Status](https://github.com/BayesianRL/NonparametricVI.jl/actions/workflows/CI.yml/badge.svg?branch=main)](https://github.com/BayesianRL/NonparametricVI.jl/actions/workflows/CI.yml?query=branch%3Amain)
 [![Documentation](https://img.shields.io/badge/docs-master-blue.svg)](https://bayesianrl.github.io/NonparametricVI.jl/dev/)
+[![DOI](https://zenodo.org/badge/951852851.svg)](https://doi.org/10.5281/zenodo.15154383)
 ![GitHub License](https://img.shields.io/github/license/BayesianRL/NonparametricVI.jl)
 
 # NonparametricVI.jl
@@ -167,3 +168,16 @@ Finally we can check the terminal position of particles:
 | EParVI | 📔 [Electrostatics-based particle sampling and approximate inference](https://arxiv.org/abs/2406.20044) ✏️ Yongchao Huang         | 🚧 todo           |  |
 
 
+## About
+If you found this project useful in your research, please cite it as follows:
+```BibTeX
+@software{NonparametricVI,
+    author = {Asadi, Amirabbas},
+    doi = {10.5281/zenodo.15154383},
+    month = apr,
+    title = {{NonparametricVI, Particle-Based and Nonparametric Variational Methods for Bayesian Inference}},
+    url = {https://github.com/BayesianRL/NonparametricVI.jl},
+    version = {0.1.0},
+    year = {2025}
+}
+```

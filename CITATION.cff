@@ -1,0 +1,11 @@
+cff-version: 1.2.0
+message: "If you found this software useful in your research, please cite it as below."
+authors:
+- family-names: "Asadi"
+  given-names: "Amirabbas"
+  orcid: "https://orcid.org/0000-0002-7421-1420"
+title: "NonparametricVI, Particle-Based and Nonparametric Variational Methods for Bayesian Inference"
+version: 0.1.0
+doi: 10.5281/zenodo.15154383
+date-released: 2025-04-05
+url: "https://github.com/BayesianRL/NonparametricVI.jl"
