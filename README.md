@@ -169,6 +169,13 @@ Finally we can check the terminal position of particles:
 | MPM-ParVI | 📔 [Variational Inference Using Material Point Method](https://arxiv.org/abs/2407.20287)  ✏️ Yongchao Huang        | 🚧 todo           |  |
 | EParVI | 📔 [Electrostatics-based particle sampling and approximate inference](https://arxiv.org/abs/2406.20044) ✏️ Yongchao Huang         | 🚧 todo           |  |
 
+## Performance Tracking (v0.1.0)
+Here you can find performance evaluations for inference methods and also trackable metrics like KSD like compared to the previous versions:
+### Metrics
+#### KSD
+<p align="center">
+    <img src="benchmarks/result/v0.1.0/KSD.png" width="1000">
+</p>
 
 ## About
 If you found this project useful in your research, please cite it as follows:
