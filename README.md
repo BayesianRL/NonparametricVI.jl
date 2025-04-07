@@ -20,7 +20,10 @@ NonparametricVI.jl is under development, you can install the latest version from
 ```julia
 Pkg.add(url="https://github.com/BayesianRL/NonparametricVI.jl.git")
 ```
-
+Or the latest registered version from Julia general repository:
+```julia
+Pkg.add("NonparametricVI")
+```
 
 ### Using with Turing.jl Probabilistic Programs
 #### Example: Linear Regression
