@@ -11,7 +11,8 @@ using KernelFunctions
 using DifferentiationInterface
 
 @testset verbose = true "NonparametricVI.jl" begin
-
+    
+    include("Aqua.jl")
     include("test_common.jl")
     include("test_discrepancy.jl")
     include("test_turing_compatibility.jl")

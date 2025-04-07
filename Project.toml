@@ -18,6 +18,7 @@ StatsBase = "2913bbd2-ae8a-5f71-8c99-4fb6c76f3a91"
 
 [compat]
 ADTypes = "1.9"
+Aqua = "0.8"
 DifferentiationInterface = "0.6.49"
 Distributions = "0.25.77"
 DynamicPPL = "0.35"
@@ -28,10 +29,12 @@ LogDensityProblems = "2"
 LogDensityProblemsAD = "1.13.0"
 Statistics = "1.6"
 StatsBase = "0.32, 0.33, 0.34"
+Test = "1"
 julia = "1.10"
 
 [extras]
+Aqua = "4c88cf16-eb10-579e-8560-4a9242c79595"
 Test = "8dfed614-e22c-5e08-85e1-65c5234f0b40"
 
 [targets]
-test = ["Test"]
+test = ["Aqua", "Test"]
