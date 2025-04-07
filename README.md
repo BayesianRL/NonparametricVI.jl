@@ -171,6 +171,12 @@ Finally we can check the terminal position of particles:
 
 ## Performance Tracking (v0.1.0)
 Here you can find performance evaluations for inference methods and also trackable metrics like KSD like compared to the previous versions:
+### Inference Methods
+#### SVGD
+<p align="center">
+    <img src="benchmarks/result/v0.1.0/SVGD.png" width="1000">
+</p>
+
 ### Metrics
 #### KSD
 <p align="center">
