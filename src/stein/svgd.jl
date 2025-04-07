@@ -132,7 +132,7 @@ function particle_velocity(pc::ParticleContainer,
     # compute velocity
     minibtach_∇ = [zeros(pc.dim) for i in 1:batchsize]
 
-    for bi in 1:batchsize
+    Base.Threads.@threads for bi in 1:batchsize
         k, ∇k = k_∇k(P[:, S[bi]], P[:, pi])
         ∇logρ = LogDensityProblems.logdensity_and_gradient(ρ, P[:, S[bi]])[2]
         minibtach_∇[bi] = k * ∇logρ + ∇k

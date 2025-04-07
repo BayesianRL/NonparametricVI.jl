@@ -1,7 +1,7 @@
 name = "NonparametricVI"
 uuid = "2fb14f58-0ee9-4f79-83b0-fac5a8c3c025"
 authors = ["Amirabbas Asadi"]
-version = "0.1.0"
+version = "0.2.0"
 
 [deps]
 ADTypes = "47edcb42-4c32-4615-8424-f2b9edc5f35b"
