@@ -4,14 +4,17 @@ NonparametricVI.jl is under development, you can install the latest version usin
 ```julia
 Pkg.add(url="https://github.com/BayesianRL/NonparametricVI.jl.git")
 ```
-
+Or the latest registered version from Julia general repository:
+```julia
+Pkg.add("NonparametricVI")
+```
 
 ## Using with Turing.jl Probabilistic Programs
 ### Example: Linear Regression
 Let's craft a toy regression problem:
 ```julia
+using DynamicPPL
 using NonparametricVI
-using Turing
 using LinearAlgebra
 using KernelFunctions
 using CairoMakie
@@ -54,14 +57,14 @@ Next we define the parameters of `SVGD`:
 dynamics = SVGD(K=kernel, η=0.003, batchsize=32)
 ```
 
-Nonparametric Variational Inference methods use a set of particles instead of a parametric family of distribution to approximate posterior (or any target) distribution. The `init` method creates the particles `pc`, in addition to an internal state `state` which will be used by the inference procedure.
+Nonparametric Variational Inference methods use a set of particles instead of a parametric family of distribution to approximate posterior (or any target) distribution. The `init` method creates the particles `pc`, in addition to an internal context `ctx` which will be used by the inference procedure.
 ```julia
-pc, state = init(model, dynamics; n_particles=128)
+pc, ctx = init(model, dynamics; n_particles=128)
 ```
 
 `pc` is a simple struct containing position of particles. Using `get_samples` we can access the particles and plot them:
 ```julia
-samples = get_samples(pc, state)
+samples = get_samples(pc, ctx)
 α_samples = [s[@varname(α)] for s in samples]
 β_samples = [s[@varname(β)] for s in samples];
 ```
@@ -75,7 +78,7 @@ Note that some Turing models may contain constrained parameters (e.g. positive, 
 
 Finally we can perform inference. Note the `infer!` method modifies the particles in-place.
 ```julia
-infer!(pc, state; iters=200)
+infer!(pc, ctx; iters=200)
 ```
 
 After collecting samples with `get_samples` we can visualize the final result:
@@ -115,7 +118,7 @@ dynamics = SVGD(K=kernel, η=0.5, batchsize=16)
 
 Now we create a set of particles that represent samples:
 ```julia
-pc, state = init(ρ, dynamics; n_particles=512)
+pc, ctx = init(ρ, dynamics; n_particles=512)
 ```
 We can access particle positions by `get_samples` and visualize the their current position:
 ```julia
@@ -131,7 +134,7 @@ S = get_samples(pc)
 Obviously the initial samples does not match the target density. Now we run the `SVGD` dynamics to adjust the samples:
 
 ```julia
-infer!(pc, state; iters=100)
+infer!(pc, ctx; iters=100)
 S = get_samples(pc)
 ```  
 

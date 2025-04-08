@@ -42,7 +42,16 @@ svgd_minibatch = SVGD(K=sqexp_kernel, η=0.05, batchsize=100)
     batchsize
 end
 
+"""
+    struct SVGDInferenceContext <: AbstractInferenceContext
+        dynamics::SVGD
+    end
 
+A struct representing the inference context for SVGD.
+
+# Fields
+- `dynamics::SVGD`: An instance of the `SVGD` dynamics
+"""
 struct SVGDInferenceContext <: AbstractInferenceContext 
     dynamics::SVGD
 end
@@ -50,17 +59,17 @@ end
 
 
 """
-    init_state(ρ, dynamics::SVGD)
+    init_inference_context(ρ, dynamics::SVGD)
 
-Initialize the `SVGDInferenceState` for using `SVGD` dynamics with LogDensityProblem ρ
+Initializes an `SVGDInferenceContext` with the provided SVGD dynamics.
+For now ρ is not used.
 
 # Arguments
-- `ρ`: A `LogDensityProblem` representing the target distribution's log-density function.
-- `dynamics::SVGD`: An `SVGD` object defining the dynamics used to update the particles.
+- `ρ`: The target LogDensityProblem
+- `dynamics::SVGD`: The SVGD dynamics to be used for inference.
 
 # Returns
-- An `SVGDInferenceState` object initialized with the provided arguments.
-
+- An instance of `SVGDInferenceContext` initialized with the given `dynamics`.
 """
 function init_inference_context(ρ, dynamics::SVGD)
     return SVGDInferenceContext(dynamics)
@@ -152,35 +161,36 @@ end
 """
     infer!(
         pc::ParticleContainer,
-        state::SVGDInferenceState;
-        iters::Integer,
-        ad_backend=ADTypes.AutoForwardDiff(),
+        ctx::Context{<:AbstractProblemContext, SVGDInferenceContext};
+        iters::Integer=10,
+        ad_backend::ADTypes.AbstractADType=ADTypes.AutoForwardDiff(),
         verbose::Bool=false,
-        track::Dict{String, Metric}=Dict()
+        track=Dict{String, Any}()
     )
 
-Perform inference using Stein Variational Gradient Descent (SVGD).
+Performs Stein Variational Gradient Descent (SVGD) inference to update a particle container.
 
 # Arguments
-- `pc::ParticleContainer`: The particle container holding the current set of particles. 
-- `state::SVGDInferenceState`: The internal state object for the SVGD algorithm
-
-# Keyword Arguments
-- `iters::Integer`: The number of SVGD iterations to perform.
-- `ad_backend=ADTypes.AutoForwardDiff()`: The automatic differentiation backend to use for computing gradients. Defaults to `ADTypes.AutoForwardDiff()`.
-- `verbose::Bool=false`: A boolean flag indicating whether to print progress information during the inference. Defaults to `false`.
+- `pc::ParticleContainer`: The container holding the particles to be updated.
+- `ctx::Context{<:AbstractProblemContext, SVGDInferenceContext}`: The context containing the problem definition and the SVGD inference settings.
+- `iters::Integer=10`: The number of SVGD iterations to perform.
+- `ad_backend::ADTypes.AbstractADType=ADTypes.AutoForwardDiff()`: The automatic differentiation backend to use for gradient computations.
+- `verbose::Bool=false`: A flag to enable verbose output during inference (currently not implemented).
+- `track::Dict{String, Any}()`: A dictionary specifying metrics to compute and track during inference. The keys are metric names (strings), and the values are metric types (e.g., functions or structs that can be passed to `compute_metric`).
 
 # Returns
-- `SVGDInferenceReport`: An `SVGDInferenceReport` object 
+- An `SVGDInferenceReport` containing the tracked metrics and a success flag.
 
-# Details
-This function modifies the `pc` in-place, updating the positions of the particles.
+# Notes
+- This function retrieves the log-density function from the problem context.
+- It initializes and updates the particles using the SVGD dynamics specified in the inference context.
+- Optionally, it computes and tracks specified metrics at each iteration.
 """
 function infer!(
     pc::ParticleContainer,
     ctx::Context{<:AbstractProblemContext, SVGDInferenceContext};
     iters::Integer=10,
-    ad_backend=ADTypes.AutoForwardDiff(),
+    ad_backend::ADTypes.AbstractADType=ADTypes.AutoForwardDiff(),
     verbose::Bool=false,
     track=Dict{String, Any}()
 )
