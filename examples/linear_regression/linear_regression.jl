@@ -1,12 +1,11 @@
 using Pkg
 Pkg.activate("../examples_env")
 
-Pkg.add(url="https://github.com/BayesianRL/NonparametricVI.jl.git")
+Pkg.add(["Distributions", "KernelFunctions", "CairoMakie", "LogDensityProblems"])
 
-Pkg.add(["Distributions", "Turing", "KernelFunctions", "CairoMakie", "LogDensityProblems"])
-
+using DynamicPPL
+using Distributions
 using NonparametricVI
-using Turing
 using LinearAlgebra
 using KernelFunctions
 using CairoMakie
@@ -23,10 +22,6 @@ scatter!(X,y)
 save("data.png", fig)
 
 
-using Turing
-using NonparametricVI
-using CairoMakie
-
 @model function bayesian_regression(X, y)
     α ~ Normal(0.0, 1.0)
     β ~ Normal(0.0, 1.0)
@@ -41,9 +36,9 @@ model = bayesian_regression(X, y)
 
 kernel = SqExponentialKernel() ∘ ScaleTransform(0.3)
 dynamics = SVGD(K=kernel, η=0.003, batchsize=32)
-pc, state = init(model, dynamics; n_particles=128)
+pc, ctx = NonparametricVI.init(model, dynamics; n_particles=128)
 
-samples = get_samples(pc, state)
+samples = get_samples(pc, ctx)
 α_samples = [s[@varname(α)] for s in samples]
 β_samples = [s[@varname(β)] for s in samples];
 
@@ -58,10 +53,10 @@ save("particles_before_inference.png", fig)
 
 
 
-infer!(pc, state; iters=200)
+infer!(pc, ctx; iters=200)
 
 
-samples = get_samples(pc, state)
+samples = get_samples(pc, ctx)
 α_samples = [s[@varname(α)] for s in samples]
 β_samples = [s[@varname(β)] for s in samples];
 

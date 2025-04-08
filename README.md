@@ -29,8 +29,9 @@ Pkg.add("NonparametricVI")
 #### Example: Linear Regression
 Let's craft a toy regression problem:
 ```julia
+using DynamicPPL
+using Distributions
 using NonparametricVI
-using Turing
 using LinearAlgebra
 using KernelFunctions
 using CairoMakie
@@ -71,18 +72,18 @@ Next we define the parameters of `SVGD`:
 dynamics = SVGD(K=kernel, η=0.003, batchsize=32)
 ```
 
-Nonparametric Variational Inference methods use a set of particles instead of a parametric family of distribution to approximate posterior (or any target) distribution. The `init` method creates the particles `pc`, in addition to an internal state `state` which will be used by the inference procedure.
+Nonparametric Variational Inference methods use a set of particles instead of a parametric family of distribution to approximate posterior (or any target) distribution. The `init` method creates the particles `pc`, in addition to an internal context `ctx` which will be used by the inference procedure.
 ```julia
-pc, state = init(model, dynamics; n_particles=128)
+pc, ctx = init(model, dynamics; n_particles=128)
 ```
 
 `pc` is a simple struct containing position of particles. Using `get_samples` we can access the particles and plot them:
 ```julia
-samples = get_samples(pc, state)
+samples = get_samples(pc, ctx)
 α_samples = [s[@varname(α)] for s in samples]
 β_samples = [s[@varname(β)] for s in samples];
 ```
-Note that some Turing models may contain constrained parameters (e.g. positive, bounded, ...) while most inference methods are performed on an unconstrained space obtained by transforming the original denisty of parameters. The `get_samples` method transforms the particle positions back to the contrained space. Before running SVGD we can visualize the currest state of particles:  
+Note that some Turing models may contain constrained parameters (e.g. positive, bounded, ...) while most inference methods are performed on an unconstrained space obtained by transforming the original denisty of parameters. The `get_samples` method transforms the particle positions back to the contrained space. Before running SVGD we can visualize the current state of particles:  
 
 <p align="center">
     <img src="examples/linear_regression/particles_before_inference.png" width="400">
@@ -90,7 +91,7 @@ Note that some Turing models may contain constrained parameters (e.g. positive, 
 
 Finally we can perform inference. Note the `infer!` method modifies the particles in-place.
 ```julia
-infer!(pc, state; iters=200)
+infer!(pc, ctx; iters=200)
 ```
 
 After collecting samples with `get_samples` we can visualize the final result:
@@ -103,6 +104,8 @@ After collecting samples with `get_samples` we can visualize the final result:
 #### Example: A Mixture Density
 In addtion to Turing programs, you can use NonparametricVI for a custom Bayesian inference problem by implementing the [`LogDensityProblems`](https://github.com/tpapp/LogDensityProblems.jl) interface. For example here we define a toy unnormalized mixture density:
 ```julia
+using LogDensityProblems
+
 struct MixtureDensity end
 
 function LogDensityProblems.capabilities(::Type{<:MixtureDensity})
@@ -129,7 +132,7 @@ dynamics = SVGD(K=kernel, η=0.4, batchsize=16)
 
 Now we create a set of particles that represent samples:
 ```julia
-pc, state = init(ρ, dynamics; n_particles=512)
+pc, ctx = init(ρ, dynamics; n_particles=512)
 ```
 We can access particle positions by `get_samples` and visualize the their current position:
 ```julia
@@ -143,7 +146,7 @@ S = get_samples(pc)
 Obviously the initial samples does not match the target density. Now we run the `SVGD` dynamics to adjust the samples:
 
 ```julia
-report = infer!(pc, state; iters=150, track=Dict(
+report = infer!(pc, ctx; iters=150, track=Dict(
     "KSD" => KernelizedSteinDiscrepancy(kernel, 64)
 ));
 S = get_samples(pc)

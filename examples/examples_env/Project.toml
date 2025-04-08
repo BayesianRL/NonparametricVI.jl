@@ -1,7 +1,7 @@
 [deps]
 CairoMakie = "13f3f980-e62b-5c42-98c6-ff1f3baf88f0"
 Distributions = "31c24e10-a181-5473-b8eb-7969acd0382f"
+DynamicPPL = "366bfd00-2699-11ea-058f-f148b4cae6d8"
 KernelFunctions = "ec8451be-7e33-11e9-00cf-bbf324bd1392"
 LogDensityProblems = "6fdf6af0-433a-55f7-b3ed-c6c6e0b8df7c"
 NonparametricVI = "2fb14f58-0ee9-4f79-83b0-fac5a8c3c025"
-Turing = "fce5fe82-541a-59a6-adf8-730c64b5f9a0"

@@ -1,10 +1,6 @@
 using Pkg
 Pkg.activate("../examples_env")
 
-Pkg.add(url="https://github.com/BayesianRL/NonparametricVI.jl.git")
-
-Pkg.add(["Distributions", "Turing", "KernelFunctions", "CairoMakie", "LogDensityProblems"])
-
 using NonparametricVI
 using LogDensityProblems
 using LinearAlgebra
@@ -32,7 +28,7 @@ end
 kernel = SqExponentialKernel() ∘ ScaleTransform(2.0)
 dynamics = SVGD(K=kernel, η=0.4, batchsize=16)
 
-pc, state = init(ρ, dynamics; n_particles=512)
+pc, ctx = init(ρ, dynamics; n_particles=512)
 
 S = get_samples(pc)
 
@@ -52,7 +48,7 @@ ylims!(-M, M)
 save("particles_before_inference.png", fig)
 
 
-report = infer!(pc, state; iters=150, track=Dict(
+report = infer!(pc, ctx; iters=150, track=Dict(
     "KSD" => KernelizedSteinDiscrepancy(kernel, 64)
 ));
 
