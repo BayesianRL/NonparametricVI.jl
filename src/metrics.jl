@@ -24,7 +24,7 @@ KernelizedSteinDiscrepancy(K::KernelFunctions.Kernel) = KernelizedSteinDiscrepan
         metric::KernelizedSteinDiscrepancy,
         pc::ParticleContainer,
         ρ;
-        ad_backend
+        ad_backend::ADTypes.AbstractADType
     )
 
 Compute the Kernelized Stein Discrepancy (KSD) between the particles in the `ParticleContainer` and the target log-density.
@@ -51,7 +51,7 @@ function compute_metric(
     metric::KernelizedSteinDiscrepancy,
     pc::ParticleContainer,
     ρ;
-    ad_backend)
+    ad_backend::ADTypes.AbstractADType)
     
     return kernelized_stein_discrepancy(pc.P, ρ, metric.K; samplesize=metric.samplesize, ad_backend=ad_backend)
 end

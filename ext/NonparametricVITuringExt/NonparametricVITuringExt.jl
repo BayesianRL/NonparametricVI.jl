@@ -105,7 +105,35 @@ end
 
 
 
+"""
+    NVI.init(
+        model::DynamicPPL.Model,
+        dynamics::NVI.ParticleDynamics;
+        particle_initializer=NVI.NormalInitializer(),
+        n_particles::Integer=16,
+        ad_backend::ADTypes.AbstractADType=ADTypes.AutoForwardDiff()
+    )
 
+Initializes a particle container and the corresponding inference context for a DynamicPPL model.
+
+# Arguments
+- `model::DynamicPPL.Model`: The DynamicPPL model for which to perform inference.
+- `dynamics::NVI.ParticleDynamics`: The particle dynamics to be used for inference.
+- `particle_initializer`: An object that initializes the particle positions (default: `NVI.NormalInitializer()`).
+- `n_particles::Integer=16`: The number of particles to initialize (default: 16).
+- `ad_backend::ADTypes.AbstractADType=ADTypes.AutoForwardDiff()`: The automatic differentiation backend to use (default: `ADTypes.AutoForwardDiff()`).
+
+# Returns
+- A tuple containing:
+    - `pc::NVI.ParticleContainer`: The initialized particle container.
+    - `ctx::NVI.Context`: The initialized inference context.
+
+# Notes
+- This function converts the DynamicPPL model into a `LogDensityProblem` using `logdensityproblem_from_turing`.
+- It determines the dimensionality of the problem from the `LogDensityProblem`.
+- It initializes the particle positions using the provided `particle_initializer`.
+- It initializes the inference context using the log-density problem, the DynamicPPL model, and the specified `dynamics`.
+"""
 function NVI.init(
     model::DynamicPPL.Model,
     dynamics::NVI.ParticleDynamics;

@@ -10,6 +10,23 @@ function init_inference_context(ρ, dynamics::ParticleDynamics)
     error("context initialization is not implemented for the dynamics")
 end
 
+"""
+    init_context(
+        ρ,
+        dynamics::ParticleDynamics
+    )
+
+Initializes a `Context` struct containing a problem context and an inference context.
+
+# Arguments
+- `ρ`: The target log-density function.
+- `dynamics::ParticleDynamics`: The particle dynamics to be used for inference.
+
+# Returns
+- An instance of `Context` containing:
+    - A problem context initialized from `ρ`.
+    - An inference context initialized from `ρ` and `dynamics`.
+"""
 function init_context(
     ρ,
     dynamics::ParticleDynamics
@@ -24,25 +41,29 @@ end
         ρ,
         dynamics::ParticleDynamics;
         particle_initializer=NormalInitializer(),
-        n_particles::Integer,
-        ad_backend=ADTypes.AutoForwardDiff()
+        n_particles::Integer=16,
+        ad_backend::ADTypes.AbstractADType=ADTypes.AutoForwardDiff()
     )
 
-Initialize the particle container and the internal state for a particle-based inference algorithm, given a log-density problem.
+Initializes a particle container and the corresponding inference context.
 
 # Arguments
-- `ρ`: A `LogDensityProblem` representing the target distribution's log-density function.
-- `dynamics::ParticleDynamics`: The particle dynamics object that governs how particles evolve.
-
-# Keyword Arguments
-- `particle_initializer`: An object that initializes the positions of the particles. Defaults to `NormalInitializer()`.
-- `n_particles::Integer`: The number of particles to initialize. 
-- `ad_backend=ADTypes.AutoForwardDiff()`: The automatic differentiation backend to use if the provided `ρ` is not differentiable. Defaults to `ADTypes.AutoForwardDiff()`.
+- `ρ`: The target log-density function.
+- `dynamics::ParticleDynamics`: The particle dynamics to be used for inference.
+- `particle_initializer`: An object that initializes the particle positions (default: `NormalInitializer()`).
+- `n_particles::Integer=16`: The number of particles to initialize (default: 16).
+- `ad_backend::ADTypes.AbstractADType=ADTypes.AutoForwardDiff()`: The automatic differentiation backend to use for gradient computations if needed (default: `ADTypes.AutoForwardDiff()`).
 
 # Returns
-- `pc`: The initialized particle container, holding the initial positions of all particles. 
-- `state`: The initialized internal state associated with the provided `dynamics` and `ρ`. 
+- A tuple containing:
+    - `pc::ParticleContainer`: The initialized particle container.
+    - `ctx::Context`: The initialized inference context.
 
+# Notes
+- This function determines the dimensionality of the problem from the log-density function `ρ`.
+- It ensures that the log-density function is differentiable by wrapping it with an AD backend.
+- It initializes the particle positions using the provided `particle_initializer`.
+- It initializes the inference context based on the provided `dynamics`.
 """
 function init(
     ρ,
