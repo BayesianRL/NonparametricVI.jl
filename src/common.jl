@@ -1,11 +1,18 @@
 import LinearAlgebra
 
+import ADTypes
 import DifferentiationInterface as ADI
 import LogDensityProblems
 import LogDensityProblemsAD as LogAD
 import ForwardDiff
 
 import KernelFunctions
+
+
+function get_problem(ctx::LogDensityProblemContext)
+    return ctx.ρ
+end
+
 
 
 """

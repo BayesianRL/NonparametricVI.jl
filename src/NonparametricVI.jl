@@ -19,6 +19,19 @@ export ParticleContainer
 
 abstract type ParticleDynamics end
 
+abstract type AbstractProblemContext end
+abstract type AbstractInferenceContext end
+
+mutable struct LogDensityProblemContext <: AbstractProblemContext
+    ρ
+end
+
+mutable struct Context{T<:AbstractProblemContext, U<:AbstractInferenceContext}
+    problem::T
+    inference::U
+end
+
+
 abstract type InferenceState end
 
 abstract type Metric end
@@ -31,12 +44,14 @@ abstract type ParticleInitializer end
 
 include("common.jl")
 include("particle_containers.jl")
-include("turing.jl")
+# include("turing.jl")
 include("discrepancies.jl")
 include("metrics.jl")
 include("particle_initializers.jl")
 include("stein/svgd.jl")
 include("inference_initializers.jl")
 include("sample_utils.jl")
+
+
 
 end
