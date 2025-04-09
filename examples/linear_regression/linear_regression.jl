@@ -1,7 +1,7 @@
 using Pkg
 Pkg.activate("../examples_env")
 
-Pkg.add(["Distributions", "KernelFunctions", "CairoMakie", "LogDensityProblems"])
+# Pkg.add(["Distributions", "KernelFunctions", "CairoMakie", "LogDensityProblems"])
 
 using DynamicPPL
 using Distributions
@@ -34,8 +34,10 @@ end
 model = bayesian_regression(X, y)
 
 
-kernel = SqExponentialKernel() ∘ ScaleTransform(0.3)
+kernel = SqExponentialKernel()
 dynamics = SVGD(K=kernel, η=0.003, batchsize=32)
+
+
 pc, ctx = NonparametricVI.init(model, dynamics; n_particles=128)
 
 samples = get_samples(pc, ctx)
@@ -49,11 +51,29 @@ for i in eachindex(α_samples)
   lines!(x_rng, α_samples[i] * x_rng .+ β_samples[i], color=:gray, alpha=0.5)
 end
 scatter!(X,y)
-save("particles_before_inference.png", fig)
+save("particles_prior_init.png", fig)
 
 
 
-infer!(pc, ctx; iters=200)
+pc, ctx = NonparametricVI.init(model, dynamics; n_particles=128, particle_initializer=LangevinInitializer(0.002, 10))
+
+samples = get_samples(pc, ctx)
+α_samples = [s[@varname(α)] for s in samples]
+β_samples = [s[@varname(β)] for s in samples];
+
+fig = Figure(size=(700,700))
+ax = Axis(fig[1,1])
+x_rng = collect(-1:0.1:1)
+for i in eachindex(α_samples)
+  lines!(x_rng, α_samples[i] * x_rng .+ β_samples[i], color=:gray, alpha=0.5)
+end
+scatter!(X,y)
+save("particles_langevin_init.png", fig)
+
+
+
+
+infer!(pc, ctx; iters=50)
 
 
 samples = get_samples(pc, ctx)

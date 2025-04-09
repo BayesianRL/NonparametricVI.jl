@@ -60,10 +60,10 @@ end
 model = bayesian_regression(X, y)
 ```
 
-To define the dynamics of Stein Variational Gradient Descent (SVGD), we need a positive-definite kernel. You can use all kernels provided by [KernelFunctions.jl](https://github.com/JuliaGaussianProcesses/KernelFunctions.jl). We use a scaled squared exponential kernel. for more details on designing more complex kernels, check out [KernelFunctions.jl](https://github.com/JuliaGaussianProcesses/KernelFunctions.jl) documentation:  
+To define the dynamics of Stein Variational Gradient Descent (SVGD), we need a positive-definite kernel. You can use all kernels provided by [KernelFunctions.jl](https://github.com/JuliaGaussianProcesses/KernelFunctions.jl). We use a squared exponential kernel. For more details on designing more complex kernels, check out [KernelFunctions.jl](https://github.com/JuliaGaussianProcesses/KernelFunctions.jl) documentation:  
 ```julia
 using KernelFunctions
-kernel = SqExponentialKernel() ∘ ScaleTransform(0.3)
+kernel = SqExponentialKernel()
 ```
 
 Next we define the parameters of `SVGD`:  
@@ -73,6 +73,7 @@ dynamics = SVGD(K=kernel, η=0.003, batchsize=32)
 ```
 
 Nonparametric Variational Inference methods use a set of particles instead of a parametric family of distribution to approximate posterior (or any target) distribution. The `init` method creates the particles `pc`, in addition to an internal context `ctx` which will be used by the inference procedure.
+
 ```julia
 pc, ctx = init(model, dynamics; n_particles=128)
 ```
@@ -86,12 +87,30 @@ samples = get_samples(pc, ctx)
 Note that some Turing models may contain constrained parameters (e.g. positive, bounded, ...) while most inference methods are performed on an unconstrained space obtained by transforming the original denisty of parameters. The `get_samples` method transforms the particle positions back to the contrained space. Before running SVGD we can visualize the current state of particles:  
 
 <p align="center">
-    <img src="examples/linear_regression/particles_before_inference.png" width="400">
+    <img src="examples/linear_regression/particles_prior_init.png" width="400">
 </p>
 
-Finally we can perform inference. Note the `infer!` method modifies the particles in-place.
+By default the initial particles will be sampled from prior. One can use other approaches, 
+for example we can initialize particles with `10` steps of Langevin dynamics with an step size of `0.002`: 
+
 ```julia
-infer!(pc, ctx; iters=200)
+pc, ctx = NonparametricVI.init(model, dynamics;
+                               n_particles=128,
+                               particle_initializer=LangevinInitializer(0.002, 10))
+
+```
+
+With Langevin initialization, particles will look like this:
+
+<p align="center">
+    <img src="examples/linear_regression/particles_langevin_init.png" width="400">
+</p>
+
+Intuitively, Langevin dynamics is very local and only uses *attraction* forces for adjusting particles and to prevent particles from collapsing on a model relies on an additive Gaussian noise. SVGD not only uses attraction but also uses *repulsion* forces to transport the particles in order to improve the quality of samples. While SVGD can be used standalone (see the next example), it is computationally more expensive so it is sometimes a good idea to initialize particles with a simpler dynamics like Langevin. 
+
+Note the `infer!` method modifies the particles in-place.
+```julia
+infer!(pc, ctx; iters=50)
 ```
 
 After collecting samples with `get_samples` we can visualize the final result:
