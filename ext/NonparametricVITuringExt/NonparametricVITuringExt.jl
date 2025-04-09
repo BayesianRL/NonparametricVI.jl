@@ -10,6 +10,7 @@ import ADTypes
 mutable struct DynamicPPLProblemContext <: NVI.AbstractProblemContext
     ρ
     model::DynamicPPL.Model
+    linked_vis::Vector{DynamicPPL.VarInfo}
 end
 
 function NVI.get_problem(ctx::DynamicPPLProblemContext)
@@ -45,34 +46,35 @@ function logdensityproblem_from_turing(
     return ∇ρ
 end
 
-"""
-    constrained_particles(pc::ParticleContainer, model::DynamicPPL.Model)
 
-Tranforming the position of samples in `pc` back to the constrained space
-
-# Arguments
-- `pc::ParticleContainer`: The container holding the unconstrained positions of the particles.
-- `model::DynamicPPL.Model`: The target Turing program
-
-# Returns
-- `samples::Vector{<:DynamicPPL.VarInfo}`: A vector of `VarInfo` objects, where each `VarInfo` contains a sample from the constrained parameter space of the `model`, corresponding to a particle in the `ParticleContainer`.
-
-"""
-function constrained_particles(
-    pc::NVI.ParticleContainer,
-    model::DynamicPPL.Model
-)
-    varinfo = DynamicPPL.VarInfo(model)
-    DynamicPPL.link!!(varinfo, model)
-    samples = Vector{typeof(varinfo)}(undef, pc.size)
-    # transforming each sample back to the constrained space
-    for si in 1:pc.size
-        unconstrained_varinfo = DynamicPPL.unflatten(varinfo, pc.P[:, si])
-        samples[si] = DynamicPPL.invlink(unconstrained_varinfo, model)
+function generate_prior_samples(model::DynamicPPL.Model, n::Integer)
+    linked_vis = Vector{DynamicPPL.VarInfo}(undef, n)
+    for i in 1:n 
+      linked_vis[i] = DynamicPPL.invlink(DynamicPPL.VarInfo(model), model)
     end
-    return samples
+    return linked_vis
+end
+  
+
+function samples_to_matrix(samples_varinfo)
+    M = (t->DynamicPPL.values_as(t, Vector)).(samples_varinfo)
+    return stack(M)
 end
 
+
+function constrained_particle(
+    θ,
+    idx,
+    ctx::NVI.Context{
+        DynamicPPLProblemContext,
+        <:NVI.AbstractInferenceContext
+    }
+)
+    vil = DynamicPPL.unflatten(ctx.problem.linked_vis[idx], θ)
+    # constrained = DynamicPPL.values_as_in_model(ctx.problem.model, true, vil)
+    constrained = DynamicPPL.invlink(vil, ctx.problem.model)
+    return constrained
+end
 
 
 
@@ -83,33 +85,37 @@ function NVI.get_samples(
         <:NVI.AbstractInferenceContext
     }
 )
-    return constrained_particles(pc, ctx.problem.model)
+    constrained_particles = [constrained_particle(pc.P[:, i], i, ctx) for i in 1:pc.size]
+    return constrained_particles
 end
 
 
-
-
-function NVI.init_problem_context(ρ, model)
-    return DynamicPPLProblemContext(ρ, model)
-end
-
-function NVI.init_context(
+function init_context(
     ρ,
     model::DynamicPPL.Model,
-    dynamics::NVI.ParticleDynamics
+    dynamics::NVI.ParticleDynamics,
+    linked_vis::Vector{DynamicPPL.VarInfo}
 )
-    problem_ctx = NVI.init_problem_context(ρ, model)
     inference_ctx = NVI.init_inference_context(ρ, dynamics)
+    problem_ctx = DynamicPPLProblemContext(ρ, model, linked_vis)
     return NVI.Context(problem_ctx, inference_ctx)
 end
 
 
+function init_particles(
+    ctx::NVI.Context{
+        DynamicPPLProblemContext,
+        <:NVI.AbstractInferenceContext
+    }  
+)
+    return NVI.ParticleContainer(samples_to_matrix(ctx.problem.linked_vis))
+end
 
 """
     NVI.init(
         model::DynamicPPL.Model,
         dynamics::NVI.ParticleDynamics;
-        particle_initializer=NVI.NormalInitializer(),
+        particle_initializer=NVI.PriorInitializer(),
         n_particles::Integer=16,
         ad_backend::ADTypes.AbstractADType=ADTypes.AutoForwardDiff()
     )
@@ -119,7 +125,7 @@ Initializes a particle container and the corresponding inference context for a D
 # Arguments
 - `model::DynamicPPL.Model`: The DynamicPPL model for which to perform inference.
 - `dynamics::NVI.ParticleDynamics`: The particle dynamics to be used for inference.
-- `particle_initializer`: An object that initializes the particle positions (default: `NVI.NormalInitializer()`).
+- `particle_initializer`: An object that initializes the particle positions (default: `NVI.PriorInitializer()`).
 - `n_particles::Integer=16`: The number of particles to initialize (default: 16).
 - `ad_backend::ADTypes.AbstractADType=ADTypes.AutoForwardDiff()`: The automatic differentiation backend to use (default: `ADTypes.AutoForwardDiff()`).
 
@@ -130,23 +136,23 @@ Initializes a particle container and the corresponding inference context for a D
 
 # Notes
 - This function converts the DynamicPPL model into a `LogDensityProblem` using `logdensityproblem_from_turing`.
-- It determines the dimensionality of the problem from the `LogDensityProblem`.
-- It initializes the particle positions using the provided `particle_initializer`.
-- It initializes the inference context using the log-density problem, the DynamicPPL model, and the specified `dynamics`.
+- It generates initial particle positions by drawing samples from the prior distribution defined by the `model` using `generate_prior_samples`.
 """
 function NVI.init(
     model::DynamicPPL.Model,
     dynamics::NVI.ParticleDynamics;
-    particle_initializer=NVI.NormalInitializer(),
+    particle_initializer=NVI.PriorInitializer(),
     n_particles::Integer=16,
     ad_backend::ADTypes.AbstractADType=ADTypes.AutoForwardDiff()
 )
     # create LogDensityProblem from Truing model
     ρ = logdensityproblem_from_turing(model, ad_backend)
-    dim = LogDensityProblems.dimension(ρ)
     # initial position of particles
-    pc = NVI.init_particle(dim, n_particles, particle_initializer)
-    ctx = NVI.init_context(ρ, model, dynamics)
+    linked_vis = generate_prior_samples(model, n_particles)
+
+    ctx = init_context(ρ, model, dynamics, linked_vis)
+    pc = init_particles(ctx)
+    
     return pc, ctx
 end
 
