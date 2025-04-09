@@ -47,6 +47,22 @@
         model = beta_binomial([1, 1, 1, 0, 1, 1])
         kernel = KernelFunctions.SqExponentialKernel()
         dynamics = NonparametricVI.SVGD(K=kernel, η=0.2, batchsize=nothing)
+
+        pc, ctx = NonparametricVI.init(model,
+                                       dynamics;
+                                       particle_initializer=NonparametricVI.ZeroInitializer(),
+                                       n_particles=16)
+        
+        pc, ctx = NonparametricVI.init(model,
+                                       dynamics;
+                                       particle_initializer=NonparametricVI.NormalInitializer(),
+                                       n_particles=16)
+        
+        pc, ctx = NonparametricVI.init(model,
+                                       dynamics;
+                                       particle_initializer=NonparametricVI.PriorInitializer(),
+                                       n_particles=16)
+        pc, ctx = NonparametricVI.init(model, dynamics; n_particles=16)
         pc, ctx = NonparametricVI.init(model, dynamics; n_particles=16)
         report = NonparametricVI.infer!(pc, ctx; iters=10, verbose=true)
         

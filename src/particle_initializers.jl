@@ -1,14 +1,29 @@
 struct ZeroInitializer <: ParticleInitializer end
-
-function init_particle(dim, particles, initializer::ZeroInitializer)
-    return ParticleContainer(zeros((dim, particles)))
-end
-
 struct NormalInitializer <: ParticleInitializer end
+struct PriorInitializer <: ParticleInitializer end
 
-function init_particle(dim, particles, initializer::NormalInitializer)
-    return ParticleContainer(randn((dim, particles)))
+function init_particles(
+    n_particles::Integer,
+    particle_initializer::NormalInitializer,
+    ctx::Context{
+        <:AbstractProblemContext,
+        <:AbstractInferenceContext
+    }  
+)
+    dim = LogDensityProblems.dimension(ctx.problem.ρ)
+
+    return ParticleContainer(randn((dim, n_particles)))
 end
 
-struct PriorInitializer <: ParticleInitializer end
-# [todo] `init_particle` needs access to the Turing model
+function init_particles(
+    n_particles::Integer,
+    particle_initializer::ZeroInitializer,
+    ctx::Context{
+        <:AbstractProblemContext,
+        <:AbstractInferenceContext
+    }  
+)
+    dim = LogDensityProblems.dimension(ctx.problem.ρ)
+
+    return ParticleContainer(zeros((dim, n_particles)))
+end

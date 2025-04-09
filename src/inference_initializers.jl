@@ -77,8 +77,8 @@ function init(
     if LogDensityProblems.capabilities(ρ) == LogDensityProblems.LogDensityOrder{0}()
         ρ = LogDensityProblemsAD.ADgradient(ad_backend, ρ)
     end
-    # initial position of particles
-    pc = init_particle(dim, n_particles, particle_initializer)
     ctx = init_context(ρ, dynamics)
+    # initial position of particles
+    pc = init_particles(n_particles, particle_initializer, ctx)
     return pc, ctx
 end

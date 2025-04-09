@@ -16,6 +16,11 @@ export SVGD
 # particle containers
 export ParticleContainer
 
+# particle initialization methods
+export ZeroInitializer,
+       NormalInitializer,
+       PriorInitializer
+
 
 abstract type ParticleDynamics end
 

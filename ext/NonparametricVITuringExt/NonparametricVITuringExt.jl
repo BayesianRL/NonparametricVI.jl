@@ -102,7 +102,9 @@ function init_context(
 end
 
 
-function init_particles(
+function NVI.init_particles(
+    n_particles::Integer,
+    particle_initializer::NVI.PriorInitializer,
     ctx::NVI.Context{
         DynamicPPLProblemContext,
         <:NVI.AbstractInferenceContext
@@ -148,10 +150,11 @@ function NVI.init(
     # create LogDensityProblem from Truing model
     ρ = logdensityproblem_from_turing(model, ad_backend)
     # initial position of particles
+
     linked_vis = generate_prior_samples(model, n_particles)
 
     ctx = init_context(ρ, model, dynamics, linked_vis)
-    pc = init_particles(ctx)
+    pc = NVI.init_particles(n_particles, particle_initializer, ctx)
     
     return pc, ctx
 end
