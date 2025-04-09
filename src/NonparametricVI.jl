@@ -19,7 +19,8 @@ export ParticleContainer
 # particle initialization methods
 export ZeroInitializer,
        NormalInitializer,
-       PriorInitializer
+       PriorInitializer,
+       LangevinInitializer
 
 
 abstract type ParticleDynamics end

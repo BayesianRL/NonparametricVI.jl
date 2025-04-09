@@ -62,6 +62,13 @@
                                        dynamics;
                                        particle_initializer=NonparametricVI.PriorInitializer(),
                                        n_particles=16)
+
+        pc, ctx = NonparametricVI.init(model,
+                                       dynamics;
+                                       particle_initializer=NonparametricVI.LangevinInitializer(),
+                                       n_particles=16)
+
+                                       
         pc, ctx = NonparametricVI.init(model, dynamics; n_particles=16)
         pc, ctx = NonparametricVI.init(model, dynamics; n_particles=16)
         report = NonparametricVI.infer!(pc, ctx; iters=10, verbose=true)

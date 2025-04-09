@@ -143,7 +143,7 @@ Initializes a particle container and the corresponding inference context for a D
 function NVI.init(
     model::DynamicPPL.Model,
     dynamics::NVI.ParticleDynamics;
-    particle_initializer=NVI.PriorInitializer(),
+    particle_initializer::NVI.ParticleInitializer=NVI.PriorInitializer(),
     n_particles::Integer=16,
     ad_backend::ADTypes.AbstractADType=ADTypes.AutoForwardDiff()
 )
