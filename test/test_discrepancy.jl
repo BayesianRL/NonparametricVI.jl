@@ -28,4 +28,10 @@
     @test D_stein_P2 < D_stein_P1
     @test D_stein_P2 < D_stein_P3
 
+    @testset "Full-batch determinism" begin
+        D1 = NonparametricVI.kernelized_stein_discrepancy(P1, ∇ρ, kernel; samplesize=size(P1, 2), ad_backend=AutoForwardDiff())
+        D2 = NonparametricVI.kernelized_stein_discrepancy(P1, ∇ρ, kernel; samplesize=size(P1, 2), ad_backend=AutoForwardDiff())
+        @test D1 == D2
+    end
+        
 end

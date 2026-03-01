@@ -54,7 +54,11 @@ function kernelized_stein_discrepancy(
     # sampling a set of particles for evaluating KSD
     n = size(P)[2]
     samplesize = min(n, samplesize)
-    S = StatsBase.sample(1:n, samplesize; replace=false)
+    if samplesize == n
+        S = collect(1:n)
+    else
+        S = StatsBase.sample(1:n, samplesize; replace=false)
+    end
 
     D = 0
     for i in 1:samplesize
