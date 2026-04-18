@@ -103,7 +103,11 @@ function particle_velocity(pc::ParticleContainer,
     end
     
     # sample a mini-batch
-    S = StatsBase.sample(1:pc.size, batchsize; replace=false)
+    if batchsize == pc.size
+        S = collect(1:pc.size)
+    else
+        S = StatsBase.sample(1:pc.size, batchsize; replace=false)
+    end
     # compute velocity
     minibtach_∇ = [zeros(pc.dim) for i in 1:batchsize]
 
